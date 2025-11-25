@@ -25,13 +25,27 @@ type Order struct {
 	Total    float64 `json:"total"`
 }
 
-var users = []User{
-	{ID: 1, Name: "Ana", Balance: 200},
-	{ID: 2, Name: "Jo", Balance: 500},
-}
+var users = []User{}
+var nextUserID = 1
 
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
+}
+
+func createUserHandler(w http.ResponseWriter, r *http.Request) {
+	var u User
+
+	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		http.Error(w, "Invalid user JSON", http.StatusBadRequest)
+		return
+	}
+
+	u.ID = nextUserID
+	nextUserID++
+
+	users = append(users, u)
+
+	json.NewEncoder(w).Encode(u)
 }
 
 func main() {
@@ -39,6 +53,10 @@ func main() {
 		switch r.Method {
 		case http.MethodGet:
 			getUsersHandler(w, r)
+
+		case http.MethodPost:
+			createUserHandler(w, r)
+
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

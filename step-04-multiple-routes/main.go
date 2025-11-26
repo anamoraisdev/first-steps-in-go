@@ -93,6 +93,25 @@ func createProductHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(product)
 }
 
+func deleteProductHandler(w http.ResponseWriter, r *http.Request) {
+	idProductString := r.URL.Path[len("/products/"):]
+	idProduct, err := strconv.Atoi(idProductString)
+
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+	for i, product := range products {
+		if product.ID == idProduct {
+			deletedProduct := products[i]
+			products = append(products[:i], products[i+1:]...)
+			json.NewEncoder(w).Encode(deletedProduct)
+			return
+		}
+	}
+	http.Error(w, "User not found", http.StatusNotFound)
+}
+
 func main() {
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -113,6 +132,8 @@ func main() {
 			getProductsHandler(w, r)
 		case http.MethodPost:
 			createProductHandler(w, r)
+		case http.MethodDelete:
+			deleteProductHandler(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

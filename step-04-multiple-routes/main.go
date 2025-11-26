@@ -28,6 +28,7 @@ type Order struct {
 
 var users = []User{}
 var products = []Product{}
+var orders = []Order{}
 var nextUserID = 1
 var nextProductID = 1
 
@@ -112,6 +113,10 @@ func deleteProductHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "User not found", http.StatusNotFound)
 }
 
+func getOrdersHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(orders)
+}
 func main() {
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -134,6 +139,15 @@ func main() {
 			createProductHandler(w, r)
 		case http.MethodDelete:
 			deleteProductHandler(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/orders/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			getOrdersHandler(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

@@ -27,11 +27,9 @@ type Order struct {
 }
 
 var users = []User{}
-var products = []Product{
-	{ID: 1, Name: "Mochila", Price: 200},
-	{ID: 2, Name: "Tenis", Price: 300},
-}
+var products = []Product{}
 var nextUserID = 1
+var nextProductID = 1
 
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -79,6 +77,22 @@ func getProductsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(products)
 }
 
+func createProductHandler(w http.ResponseWriter, r *http.Request) {
+	var product Product
+
+	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
+		http.Error(w, "Invalid user JSON", http.StatusBadRequest)
+		return
+	}
+
+	product.ID = nextProductID
+	nextProductID++
+
+	products = append(products, product)
+
+	json.NewEncoder(w).Encode(product)
+}
+
 func main() {
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -97,6 +111,8 @@ func main() {
 		switch r.Method {
 		case http.MethodGet:
 			getProductsHandler(w, r)
+		case http.MethodPost:
+			createProductHandler(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

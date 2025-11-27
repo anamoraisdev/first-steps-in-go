@@ -4,12 +4,12 @@ Nessa atividade, trabalhei com JSON dentro de uma API — tanto para enviar quan
 
 Ao longo da atividade, tive contato com:
 
--criação de structs com tags JSON,
--leitura do corpo da requisição usando json.NewDecoder,
--envio de respostas em JSON usando json.NewEncoder,
--criação de handlers HTTP para GET e POST,
--tratamento básico de erros ao decodificar JSON,
--testes rápidos usando curl.
+- criação de structs com tags JSON,
+- leitura do corpo da requisição usando json.NewDecoder,
+- envio de respostas em JSON usando json.NewEncoder,
+- criação de handlers HTTP para GET e POST,
+- tratamento básico de erros ao decodificar JSON,
+- testes rápidos usando curl.
 
 🚀 Funcionalidades
 

@@ -3,6 +3,7 @@ version: "3.8"
 services:
   db:
     image: postgres:15
+    container_name: tasks-db
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev

@@ -31,6 +31,7 @@ var products = []Product{}
 var orders = []Order{}
 var nextUserID = 1
 var nextProductID = 1
+var nextOrderID = 1
 
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -117,6 +118,58 @@ func getOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(orders)
 }
+
+func createOrderHandler(w http.ResponseWriter, r *http.Request) {
+	var order Order
+	var user *User
+	var total float64
+
+	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
+		http.Error(w, "Invalid user JSON", http.StatusBadRequest)
+		return
+	}
+
+	for i := range users {
+		if users[i].ID == order.UserID {
+			user = &users[i]
+			break
+		}
+	}
+	if user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	productMap := make(map[int]Product)
+	for _, product := range products {
+		productMap[product.ID] = product
+	}
+
+	for _, productID := range order.Products {
+		product, exists := productMap[productID]
+		if !exists {
+			http.Error(w, fmt.Sprintf("Product ID %d not found", productID), http.StatusBadRequest)
+			return
+		}
+		total += product.Price
+	}
+
+	if user.Balance < total {
+		http.Error(w, "Insufficient balance", http.StatusPaymentRequired)
+		return
+	} else {
+		user.Balance -= total
+	}
+
+	order.ID = nextOrderID
+	order.Total = total
+	nextOrderID++
+
+	orders = append(orders, order)
+
+	json.NewEncoder(w).Encode(order)
+
+}
 func main() {
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -148,6 +201,8 @@ func main() {
 		switch r.Method {
 		case http.MethodGet:
 			getOrdersHandler(w, r)
+		case http.MethodPost:
+			createOrderHandler(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

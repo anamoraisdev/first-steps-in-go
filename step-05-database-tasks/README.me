@@ -1,0 +1,54 @@
+📌 Introdução
+Esta atividade foi pensada para praticar o uso de banco de dados em uma API Go, evoluindo os conceitos aprendidos nas atividades anteriores — que rodavam tudo somente em memória. Aqui, o objetivo foi construir uma API simples de tasks, mas já conectando com um PostgreSQL via Docker, estruturando melhor o projeto
+
+Ao longo da atividade, tive contato com:
+
+ - conexão com o banco usando sqlx,
+ - criação de tabelas e testes via psql,
+ - uso básico de Docker para subir um container Postgres,
+ - tratamento simples de erros,
+ - testes rápidos usando curl,
+ - organização do projeto usando uma estrutura de pastas mais limpa (models/, handlers/, etc.).
+
+🚀 Funcionalidades
+A atividade implementa rotas básicas para lidar com tasks, usando HTTP, JSON e PostgreSQL.
+
+🔹 Tasks
+
+GET /tasks — lista todas as tasks
+POST /tasks — cria uma nova task
+
+🗂️ Estrutura de Pastas
+
+step-05-database-tasks/
+│── handlers/   → contém os handlers HTTP
+│── models/     → contém structs e modelos de dados
+│── db.go       → conexão com o Postgres (sqlx)
+│── main.go     → inicialização do servidor e rotas
+│── docker-compose.yml
+
+🏃 Como Rodar
+
+Suba o banco de dados:
+
+docker compose up -d
+
+
+Rode a API:
+
+go run .
+
+
+O servidor estará disponível em:
+
+👉 http://localhost:8080
+
+🧪 Exemplo de Teste (curl)
+
+Criar uma task
+curl -X POST http://localhost:8080/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Estudar Go"}'
+
+Listar todas as tasks
+curl http://localhost:8080/tasks

@@ -3,18 +3,21 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/anamoraisdev/first-steps-in-go/step-05-database-tasks/db"
+	"github.com/anamoraisdev/first-steps-in-go/step-05-database-tasks/handlers"
 )
 
 func main() {
-	db := ConnectDB()
+	db := db.ConnectDB()
 	defer db.Close()
 
 	http.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			ListTasks(db)(w, r)
+			handlers.ListTasks(db)(w, r)
 		case http.MethodPost:
-			CreateTask(db)(w, r)
+			handlers.CreateTask(db)(w, r)
 		}
 	})
 

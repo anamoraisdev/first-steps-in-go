@@ -1,15 +1,16 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/anamoraisdev/first-steps-in-go/step-05-database-tasks/models"
 	"github.com/jmoiron/sqlx"
 )
 
 func ListTasks(db *sqlx.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tasks := []Task{}
+		tasks := []models.Task{}
 
 		err := db.Select(&tasks, "SELECT * FROM tasks ORDER BY id")
 		if err != nil {
@@ -37,7 +38,7 @@ func CreateTask(db *sqlx.DB) http.HandlerFunc {
 			return
 		}
 
-		var newTask Task
+		var newTask models.Task
 		query := `
 			INSERT INTO tasks (title)
 			VALUES ($1)

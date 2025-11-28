@@ -1,10 +1,15 @@
 package main
 
-import "log"
+import (
+	"log"
+	"net/http"
+)
 
 func main() {
 	db := ConnectDB()
 	defer db.Close()
 
-	log.Println("Database ready!")
+	http.HandleFunc("/tasks", ListTasks(db))
+	log.Println("Server running on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

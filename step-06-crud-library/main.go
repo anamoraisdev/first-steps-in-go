@@ -12,8 +12,16 @@ func main() {
 	defer database.Close()
 
 	http.HandleFunc("/books", func(w http.ResponseWriter, r *http.Request) {
-		handlers.ListBooks(database)(w, r)
+		switch r.Method {
+		case http.MethodGet:
+			handlers.ListBooks(database)(w, r)
+		case http.MethodPost:
+			handlers.RegisterBook(database)(w, r)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+
+		}
 	})
-	log.Fatal(http.ListenAndServe(":8080", nil))
 	log.Println("Server running on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

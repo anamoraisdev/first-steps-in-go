@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"step-06-crud-library/models"
+	"strconv"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -19,6 +22,30 @@ func ListBooks(db *sqlx.DB) http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(books)
+	}
+}
+func GetBookByID(db *sqlx.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/books/")
+		id, err := strconv.Atoi(path)
+		if err != nil {
+			http.Error(w, "invalid book id", http.StatusBadRequest)
+			return
+		}
+
+		var book models.Book
+		err = db.Get(&book, "SELECT * FROM books WHERE id = $1", id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				http.Error(w, "book not found", http.StatusNotFound)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(book)
 	}
 }
 

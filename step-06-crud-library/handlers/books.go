@@ -109,3 +109,28 @@ func UpdateBook(db *sqlx.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(book)
 	}
 }
+
+func DeleteBook(db *sqlx.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/books/")
+		id, err := strconv.Atoi(path)
+		if err != nil {
+			http.Error(w, "invalid book id", http.StatusBadRequest)
+			return
+		}
+
+		result, err := db.Exec("DELETE FROM books WHERE id = $1", id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			http.Error(w, "book not found", http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

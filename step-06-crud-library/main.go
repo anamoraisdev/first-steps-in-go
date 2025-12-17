@@ -29,6 +29,8 @@ func main() {
 			handlers.GetBookByID(database)(w, r)
 		case http.MethodPut:
 			handlers.UpdateBook(database)(w, r)
+		case http.MethodDelete:
+			handlers.DeleteBook(database)(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

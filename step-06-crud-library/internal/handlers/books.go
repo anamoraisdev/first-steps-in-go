@@ -21,7 +21,6 @@ func ListBooks(db *sqlx.DB) http.HandlerFunc {
 			utils.RespondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(books)
 	}
 }
@@ -45,7 +44,6 @@ func GetBookByID(db *sqlx.DB) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(book)
 	}
 }
@@ -74,7 +72,7 @@ func RegisterBook(db *sqlx.DB) http.HandlerFunc {
 			utils.RespondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
+
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(newBook)
 	}
@@ -116,7 +114,6 @@ func UpdateBook(db *sqlx.DB) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(book)
 	}
 }

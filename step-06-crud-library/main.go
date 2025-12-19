@@ -39,7 +39,9 @@ func main() {
 	})
 
 	handler := middlewares.Logger(
-		middlewares.JSON(mux),
+		middlewares.JSON(
+			middlewares.CORS(mux),
+		),
 	)
 
 	log.Fatal(http.ListenAndServe(":8080", handler))

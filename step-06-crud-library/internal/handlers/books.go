@@ -12,16 +12,59 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+type PaginatedResponse struct {
+	Data  []models.Book `json:"data"`
+	Page  int           `json:"page"`
+	Limit int           `json:"limit"`
+	Total int           `json:"total"`
+}
+
 func ListBooks(db *sqlx.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		books := []models.Book{}
 
-		err := db.Select(&books, "SELECT * FROM books ORDER BY id")
+		page := 1
+		limit := 20
+
+		pageStr := r.URL.Query().Get("page")
+		limitStr := r.URL.Query().Get("limit")
+
+		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+			page = p
+		}
+
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= 100 {
+			limit = l
+		}
+
+		offset := (page - 1) * limit
+		var total int
+
+		err := db.Get(&total, "SELECT COUNT(*) FROM books")
 		if err != nil {
-			utils.RespondError(w, http.StatusInternalServerError, err.Error())
+			utils.RespondError(w, http.StatusInternalServerError, "failed to count books")
 			return
 		}
-		json.NewEncoder(w).Encode(books)
+
+		query := `
+			SELECT * FROM books
+			ORDER BY id
+			LIMIT $1 OFFSET $2
+		`
+
+		err = db.Select(&books, query, limit, offset)
+		if err != nil {
+			utils.RespondError(w, http.StatusInternalServerError, "failed to fetch books")
+			return
+		}
+		response := PaginatedResponse{
+			Data:  books,
+			Page:  page,
+			Limit: limit,
+			Total: total,
+		}
+
+		json.NewEncoder(w).Encode(response)
 	}
 }
 func GetBookByID(db *sqlx.DB) http.HandlerFunc {

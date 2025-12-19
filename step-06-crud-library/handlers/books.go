@@ -17,7 +17,7 @@ func ListBooks(db *sqlx.DB) http.HandlerFunc {
 
 		err := db.Select(&books, "SELECT * FROM books ORDER BY id")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -30,17 +30,17 @@ func GetBookByID(db *sqlx.DB) http.HandlerFunc {
 		path := strings.TrimPrefix(r.URL.Path, "/books/")
 		id, err := strconv.Atoi(path)
 		if err != nil {
-			http.Error(w, "invalid book id", http.StatusBadRequest)
+			respondError(w, http.StatusBadRequest, "invalid book id")
 			return
 		}
 
 		err = db.Get(&book, "SELECT * FROM books WHERE id = $1", id)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				http.Error(w, "book not found", http.StatusNotFound)
+				respondError(w, http.StatusNotFound, "book not found")
 				return
 			}
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -54,12 +54,12 @@ func RegisterBook(db *sqlx.DB) http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&newBook)
 		if err != nil {
-			http.Error(w, "invalid JSON", http.StatusBadRequest)
+			respondError(w, http.StatusBadRequest, "invalid JSON")
 			return
 		}
 
 		if err := newBook.Validate(); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			respondError(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -70,7 +70,7 @@ func RegisterBook(db *sqlx.DB) http.HandlerFunc {
 		`
 		err = db.Get(&newBook, query, newBook.Title, newBook.Author, newBook.Year)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -84,17 +84,17 @@ func UpdateBook(db *sqlx.DB) http.HandlerFunc {
 		path := strings.TrimPrefix(r.URL.Path, "/books/")
 		id, err := strconv.Atoi(path)
 		if err != nil {
-			http.Error(w, "invalid book id", http.StatusBadRequest)
+			respondError(w, http.StatusBadRequest, "invalid book id")
 			return
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&book); err != nil {
-			http.Error(w, "invalid JSON", http.StatusBadRequest)
+			respondError(w, http.StatusBadRequest, "invalid JSON")
 			return
 		}
 
 		if err := book.Validate(); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			respondError(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -108,10 +108,10 @@ func UpdateBook(db *sqlx.DB) http.HandlerFunc {
 		err = db.Get(&book, query, book.Title, book.Author, book.Year, id)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				http.Error(w, "book not found", http.StatusNotFound)
+				respondError(w, http.StatusNotFound, "book not found")
 				return
 			}
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -119,25 +119,24 @@ func UpdateBook(db *sqlx.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(book)
 	}
 }
-
 func DeleteBook(db *sqlx.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/books/")
 		id, err := strconv.Atoi(path)
 		if err != nil {
-			http.Error(w, "invalid book id", http.StatusBadRequest)
+			respondError(w, http.StatusBadRequest, "invalid book id")
 			return
 		}
 
 		result, err := db.Exec("DELETE FROM books WHERE id = $1", id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			respondError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			http.Error(w, "book not found", http.StatusNotFound)
+			respondError(w, http.StatusNotFound, "book not found")
 			return
 		}
 

@@ -58,6 +58,11 @@ func RegisterBook(db *sqlx.DB) http.HandlerFunc {
 			return
 		}
 
+		if err := newBook.Validate(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		query := `
 			INSERT INTO books (title, author, year)
 			VALUES ($1, $2, $3)
@@ -85,6 +90,11 @@ func UpdateBook(db *sqlx.DB) http.HandlerFunc {
 
 		if err := json.NewDecoder(r.Body).Decode(&book); err != nil {
 			http.Error(w, "invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		if err := book.Validate(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 

@@ -3,15 +3,18 @@ package main
 import (
 	"log"
 	"net/http"
-	"step-06-crud-library/db"
-	"step-06-crud-library/handlers"
+	"step-06-crud-library/internal/db"
+	"step-06-crud-library/internal/handlers"
+	"step-06-crud-library/internal/middlewares"
 )
 
 func main() {
 	database := db.ConnectDB()
 	defer database.Close()
 
-	http.HandleFunc("/books", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/books", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			handlers.ListBooks(database)(w, r)
@@ -19,11 +22,10 @@ func main() {
 			handlers.RegisterBook(database)(w, r)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
-
 		}
 	})
 
-	http.HandleFunc("/books/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/books/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			handlers.GetBookByID(database)(w, r)
@@ -35,6 +37,8 @@ func main() {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-	log.Println("Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	handler := middlewares.Logger(mux)
+
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }

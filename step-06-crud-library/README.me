@@ -1,0 +1,59 @@
+📌 Introdução
+
+Esta atividade foi pensada para consolidar a construção de uma API REST mais próxima de um cenário real, evoluindo o uso básico de banco de dados visto nas atividades anteriores.
+
+Aqui, o objetivo foi desenvolver uma **API de biblioteca** com um **CRUD completo**, já aplicando boas práticas como validação de dados, padronização de erros, uso de middlewares, paginação e configuração por ambiente. Todo o projeto foi desenvolvido utilizando `net/http`, sem frameworks, para reforçar o entendimento dos fundamentos.
+
+Ao longo da atividade, tive contato com:
+
+- CRUD completo persistido em PostgreSQL,
+- uso do `sqlx` para acesso ao banco,
+- validação básica de input,
+- retorno de erros padronizados com status HTTP corretos,
+- uso de middlewares (logger, CORS e JSON),
+- paginação, filtros e ordenação em consultas,
+- uso de variáveis de ambiente com `.env`,
+- separação de configurações por ambiente,
+- testes manuais utilizando curl/Postman,
+- uso de Docker para ambiente local.
+
+---
+
+🚀 Funcionalidades
+
+A API implementa operações completas para gerenciar livros em uma biblioteca.
+
+🔹 Books
+
+- GET /books — lista livros (com paginação, filtros e ordenação)
+- GET /books/{id} — busca livro por ID
+- POST /books — cria um novo livro
+- PUT /books/{id} — atualiza o livro
+- DELETE /books/{id} — remove um livro
+
+🏃 Como Rodar
+
+Suba o banco de dados:
+
+docker compose up -d
+
+Rode a API:
+
+go run .
+
+O servidor estará disponível em:
+
+👉 http://localhost:8080
+
+🧪 Exemplo de Teste (curl)
+
+Criar um livro
+curl -X POST http://localhost:8080/books \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Clean Code","author":"Robert C. Martin"}'
+
+Listar livros
+curl http://localhost:8080/books?page=1&limit=10
+
+
+

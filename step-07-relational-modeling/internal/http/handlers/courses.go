@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"step-07-relational-modeling/internal/models"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -53,5 +54,34 @@ func ListCourses(db *sqlx.DB) http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(courses)
+	}
+}
+
+func ListStudentsByCourse(db *sqlx.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		courseID := chi.URLParam(r, "course_id")
+		if courseID == "" {
+			http.Error(w, "course_id is required", http.StatusBadRequest)
+			return
+		}
+
+		students := []models.Student{}
+
+		query := `
+			SELECT s.*
+			FROM students s
+			INNER JOIN enrollments e ON e.student_id = s.id
+			WHERE e.course_id = $1
+			ORDER BY s.id;
+		`
+
+		err := db.Select(&students, query, courseID)
+		if err != nil {
+			http.Error(w, "failed to list students", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(students)
 	}
 }

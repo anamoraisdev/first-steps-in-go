@@ -55,3 +55,33 @@ func CreateLesson(db *sqlx.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(newLesson)
 	}
 }
+
+func ListLessonsByCourse(db *sqlx.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		lessons := []models.Lesson{}
+
+		courseIDParam := chi.URLParam(r, "course_id")
+		courseID, err := strconv.Atoi(courseIDParam)
+
+		if err != nil {
+			http.Error(w, "invalid course_id", http.StatusBadRequest)
+			return
+		}
+		query := `
+			SELECT * 
+			FROM lessons
+			WHERE course_id = $1
+			ORDER BY starts_at;
+		`
+
+		err = db.Select(&lessons, query, courseID)
+
+		if err != nil {
+			http.Error(w, "failed to list lessons", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(lessons)
+	}
+}

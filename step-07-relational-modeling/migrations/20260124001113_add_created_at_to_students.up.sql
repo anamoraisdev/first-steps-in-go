@@ -1,0 +1,2 @@
+ALTER TABLE students
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW();

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"step-07-relational-modeling/cmd/internal/db"
+	"step-07-relational-modeling/internal/db"
 )
 
 func main() {

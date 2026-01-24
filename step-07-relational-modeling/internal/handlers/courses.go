@@ -41,3 +41,17 @@ func CreateCourse(db *sqlx.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(newCourse)
 	}
 }
+
+func ListCourses(db *sqlx.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		courses := []models.Course{}
+
+		err := db.Select(&courses, "SELECT * FROM courses ORDER BY id")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(courses)
+	}
+}

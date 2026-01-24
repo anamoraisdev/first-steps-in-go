@@ -24,6 +24,8 @@ func main() {
 		switch r.Method {
 		case http.MethodPost:
 			handlers.CreateCourse(database)(w, r)
+		case http.MethodGet:
+			handlers.ListCourses(database)(w, r)
 		}
 	})
 

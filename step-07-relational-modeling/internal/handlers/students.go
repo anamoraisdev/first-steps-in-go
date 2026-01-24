@@ -41,3 +41,17 @@ func RegisterStudent(db *sqlx.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(newStudent)
 	}
 }
+
+func ListStudents(db *sqlx.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		students := []models.Student{}
+
+		err := db.Select(&students, "SELECT * FROM students ORDER BY id")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(students)
+	}
+}

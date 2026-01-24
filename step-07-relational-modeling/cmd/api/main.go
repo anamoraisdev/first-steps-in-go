@@ -15,6 +15,8 @@ func main() {
 		switch r.Method {
 		case http.MethodPost:
 			handlers.RegisterStudent(database)(w, r)
+		case http.MethodGet:
+			handlers.ListStudents(database)(w, r)
 		}
 	})
 

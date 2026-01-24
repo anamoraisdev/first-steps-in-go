@@ -19,6 +19,10 @@ func NewRouter(db *sqlx.DB) *chi.Mux {
 	r.Route("/students", func(r chi.Router) {
 		r.Post("/", handlers.RegisterStudent(db))
 		r.Get("/", handlers.ListStudents(db))
+
+		r.Route("/{student_id}", func(r chi.Router) {
+			r.Get("/courses", handlers.ListCoursesByStudent(db))
+		})
 	})
 
 	r.Route("/courses", func(r chi.Router) {

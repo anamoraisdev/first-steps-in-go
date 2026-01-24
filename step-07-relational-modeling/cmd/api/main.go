@@ -20,6 +20,13 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/courses", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			handlers.CreateCourse(database)(w, r)
+		}
+	})
+
 	log.Println("🚀 Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

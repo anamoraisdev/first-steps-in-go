@@ -31,5 +31,9 @@ func NewRouter(db *sqlx.DB) *chi.Mux {
 		})
 	})
 
+	r.Route("/enrollments", func(r chi.Router) {
+		r.Post("/", handlers.CreateEnrollment(db))
+	})
+
 	return r
 }

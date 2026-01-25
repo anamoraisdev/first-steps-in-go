@@ -27,51 +27,43 @@ Rotas implementadas:
 
 🏃 Como Rodar
 Subir o banco de dados
-```md
-```bash
-docker compose up -d
-```
+  docker compose up -d
+
 Rodar a API
-```bash
-go run ./cmd/api
-```
+  go run ./cmd/api
+
 A aplicação estará disponível em:
-```txt
-👉 http://localhost:8080
-```
+  👉 http://localhost:8080
+
 
 
 🧪 Exemplos de Teste (curl)
 
 🔹 Criar uma aula para um curso
-```bash
- curl -X POST http://localhost:8080/courses/1/lessons \
-      -H "Content-Type: application/json" \
-      -d '{
-        "title": "Introdução ao Go",
-        "starts_at": "2026-02-01T10:00:00Z"
-      }'
-```
+   curl -X POST http://localhost:8080/courses/1/lessons \
+        -H "Content-Type: application/json" \
+        -d '{
+          "title": "Introdução ao Go",
+          "starts_at": "2026-02-01T10:00:00Z"
+        }'
+
 
 🔹 Listar aulas de um curso
-```bash
-curl http://localhost:8080/courses/1/lessons
-```
+  curl http://localhost:8080/courses/1/lessons
+
 
 🔹 Matricula um estudante em um curso
-```bash
   curl -X POST http://localhost:8080/enrollments \
-      -H "Content-Type: application/json" \
-      -d '{
-        "student_id": 1,
-        "course_id": 1
-      }'
-```
+        -H "Content-Type: application/json" \
+        -d '{
+          "student_id": 1,
+          "course_id": 1
+        }'
+
 
 🔹 Listar cursos de um estudante
-```bash
-curl http://localhost:8080/students/1/courses
-```
+  curl http://localhost:8080/students/1/courses
+
 
 🔹 Listar estudantes de um curso
 ```bash

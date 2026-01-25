@@ -5,9 +5,10 @@ Durante esta atividade, tive contato com:
 - modelagem de tabelas relacionais
 - relacionamento 1:N (Course → Lessons)
 - relacionamento N:N (Courses ↔ Students)
+- relacionamento 1:1 (Student ↔ Enrollment)
 - uso de chaves estrangeiras (FK)
 - consultas SQL com JOIN
-- uso do Router
+- uso do Router (chi)
 
 🚀 Funcionalidades
 🔹 Cursos e Aulas (1:N)
@@ -37,8 +38,6 @@ A aplicação estará disponível em:
 
 🧪 Exemplos de Teste (curl)
 
-🔗 Has Many — Courses → Lessons
-
 🔹 Criar uma aula para um curso
     curl -X POST http://localhost:8080/courses/1/lessons \
       -H "Content-Type: application/json" \
@@ -49,8 +48,6 @@ A aplicação estará disponível em:
 
 🔹 Listar aulas de um curso
     curl http://localhost:8080/courses/1/lessons
-
-🔗 Many to Many — Students ↔ Courses
 
 🔹 Matricula um estudante em um curso
     curl -X POST http://localhost:8080/enrollments \

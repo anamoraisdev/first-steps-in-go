@@ -1,0 +1,29 @@
+# ===== Go =====
+bin/
+build/
+*.exe
+*.out
+*.test
+*.prof
+
+# ===== Go cache =====
+**/.idea/
+**/.vscode/
+**/.DS_Store
+
+# ===== Environment variables =====
+.env
+.env.*
+!.env.example
+
+# ===== Logs =====
+*.log
+
+# ===== Docker =====
+docker-compose.override.yml
+
+# ===== Coverage =====
+coverage.out
+
+# ===== OS =====
+.DS_Store

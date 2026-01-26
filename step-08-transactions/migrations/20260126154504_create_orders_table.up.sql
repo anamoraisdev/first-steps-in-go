@@ -1,0 +1,7 @@
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  customer_name TEXT NOT NULL,
+  total NUMERIC(10,2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
